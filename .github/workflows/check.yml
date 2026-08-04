@@ -1,0 +1,38 @@
+name: Check value bets
+
+on:
+  schedule:
+    # 3 corridas/dia = 6 requests/dia = ~180/mes (cupo free OddsPapi: 250/mes)
+    - cron: "0 9 * * *"
+    - cron: "0 15 * * *"
+    - cron: "0 21 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - run: python check_value_bets.py
+        env:
+          ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Guardar log actualizado
+        run: |
+          git config user.name "poisson-picks-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add value_bets_log.csv
+          git diff --staged --quiet || git commit -m "Actualiza log de value bets"
+          git push
