@@ -33,6 +33,10 @@ jobs:
         run: |
           git config user.name "poisson-picks-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add value_bets_log.csv
-          git diff --staged --quiet || git commit -m "Actualiza log de value bets"
-          git push
+          if [ -f value_bets_log.csv ]; then
+            git add value_bets_log.csv
+            git diff --staged --quiet || git commit -m "Actualiza log de value bets"
+            git push
+          else
+            echo "Sin value bets nuevos, nada que guardar."
+          fi
