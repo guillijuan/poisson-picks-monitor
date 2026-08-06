@@ -114,6 +114,16 @@ def create_github_issue(title, body):
 
 
 def main():
+    if os.environ.get("TEST_ISSUE", "").lower() in ("true", "1"):
+        print("TEST_ISSUE activado: creando Issue de prueba (simulando al bot) y saliendo.")
+        create_github_issue(
+            "Prueba de notificacion (creado por el bot)",
+            "Issue de prueba disparado manualmente con test_issue=true, para confirmar que "
+            "el correo SI llega cuando el actor es github-actions[bot] y no tu usuario. "
+            "Se puede cerrar despues de confirmar.",
+        )
+        return
+
     tournament_ids = list(TOURNAMENTS.keys())
 
     try:

@@ -6,7 +6,12 @@ on:
     - cron: "0 9 * * *"
     - cron: "0 15 * * *"
     - cron: "0 21 * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      test_issue:
+        description: "Crear un Issue de prueba (para validar notificaciones por correo)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -28,6 +33,7 @@ jobs:
         env:
           ODDSPAPI_KEY: ${{ secrets.ODDSPAPI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_ISSUE: ${{ inputs.test_issue }}
 
       - name: Guardar log actualizado
         run: |
