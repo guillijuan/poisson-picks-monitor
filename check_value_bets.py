@@ -10,6 +10,7 @@ import csv
 import json
 import os
 import sys
+import time
 from datetime import datetime, timezone
 
 import requests
@@ -35,15 +36,21 @@ LOG_PATH = "value_bets_log.csv"
 LOG_FIELDS = ["detected_at", "tournament", "fixture_id", "start_time", "side", "soft_odds", "pinnacle_fair_prob", "ev"]
 
 
-def fetch_odds(bookmaker, tournament_ids):
+def fetch_odds(bookmaker, tournament_ids, retries=3):
     ids = ",".join(str(t) for t in tournament_ids)
-    r = requests.get(
-        f"{BASE_URL}/v4/odds-by-tournaments",
-        params={"bookmaker": bookmaker, "tournamentIds": ids, "apiKey": API_KEY},
-        timeout=30,
-    )
-    r.raise_for_status()
-    return r.json()
+    for attempt in range(retries):
+        r = requests.get(
+            f"{BASE_URL}/v4/odds-by-tournaments",
+            params={"bookmaker": bookmaker, "tournamentIds": ids, "apiKey": API_KEY},
+            timeout=30,
+        )
+        if r.status_code == 429 and attempt < retries - 1:
+            wait = 5 * (attempt + 1)
+            print(f"  429 de OddsPapi, reintentando en {wait}s...")
+            time.sleep(wait)
+            continue
+        r.raise_for_status()
+        return r.json()
 
 
 def extract_1x2(fixture, bookmaker):
@@ -111,6 +118,7 @@ def main():
 
     try:
         pinnacle_data = fetch_odds("pinnacle", tournament_ids)
+        time.sleep(3)
         soft_data = fetch_odds(SOFT_BOOKMAKER, tournament_ids)
     except requests.RequestException as e:
         print(f"Error consultando OddsPapi: {e}")
