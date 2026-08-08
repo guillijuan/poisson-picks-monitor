@@ -25,6 +25,20 @@ Enfoque validado con backtest historico en el proyecto principal
   activas).
 - Solo detecta. No coloca ninguna apuesta.
 
+## Paper trading (segundo workflow)
+
+`results.yml` corre 1 vez al dia (8:00 UTC) y resuelve los value bets
+marcados como `pending` en `value_bets_log.csv`: busca el resultado final
+del partido (`GET /v4/scores` de OddsPapi) y calcula la ganancia/perdida
+hipotetica (1 unidad de stake, plata simulada, no real). Asi se puede medir
+si el enfoque es rentable en la practica antes de arriesgar dinero de
+verdad -- exactamente el paso que faltó la ultima vez.
+
+Columnas del log: `status` (`pending`/`resuelto`), `actual_result`,
+`profit`. El resumen acumulado (win rate, ROI) se imprime en el log de cada
+corrida de `results.yml`.
+
 ## Correr manualmente
 
-Pestaña **Actions** -> "Check value bets" -> **Run workflow**.
+Pestaña **Actions** -> "Check value bets" o "Resolve results (paper trading)"
+-> **Run workflow**.

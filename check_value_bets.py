@@ -33,7 +33,10 @@ TOURNAMENTS = {
 }
 
 LOG_PATH = "value_bets_log.csv"
-LOG_FIELDS = ["detected_at", "tournament", "fixture_id", "start_time", "side", "soft_odds", "pinnacle_fair_prob", "ev"]
+LOG_FIELDS = [
+    "detected_at", "tournament", "fixture_id", "start_time", "side", "soft_odds",
+    "pinnacle_fair_prob", "ev", "status", "actual_result", "profit",
+]
 
 
 def fetch_odds(bookmaker, tournament_ids, retries=3):
@@ -164,6 +167,9 @@ def main():
                     "soft_odds": soft_prices[side],
                     "pinnacle_fair_prob": round(fair[side], 4),
                     "ev": round(ev, 4),
+                    "status": "pending",
+                    "actual_result": "",
+                    "profit": "",
                 }
                 log_value_bet(row)
                 new_hits.append(row)
