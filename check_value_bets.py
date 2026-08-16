@@ -56,19 +56,30 @@ def fetch_odds(bookmaker, tournament_ids, retries=3):
         return r.json()
 
 
+# Las claves de outcome del market "101" (1X2) son consistentes ENTRE casas
+# de apuestas: "101"=home, "102"=draw, "103"=away. El campo bookmakerOutcomeId
+# NO lo es -- Pinnacle lo etiqueta como texto ("home"/"draw"/"away"), pero
+# Bet365 (y probablemente otras) usan ahi su ID interno numerico. Verificado
+# a mano comparando las respuestas crudas de ambas casas para el mismo
+# fixture: mismo orden 101/102/103, mismos favoritos.
+OUTCOME_KEY_TO_SIDE = {"101": "home", "102": "draw", "103": "away"}
+
+
 def extract_1x2(fixture, bookmaker):
     odds = fixture.get("bookmakerOdds", {}).get(bookmaker, {})
     if odds.get("suspended"):
         return None
     market = odds.get("markets", {}).get(MONEYLINE_MARKET_ID)
-    if not market:
+    if not market or not market.get("marketActive", True):
         return None
     prices = {}
-    for outcome in market.get("outcomes", {}).values():
+    for outcome_key, outcome in market.get("outcomes", {}).items():
+        side = OUTCOME_KEY_TO_SIDE.get(outcome_key)
+        if not side:
+            continue
         player = outcome.get("players", {}).get("0", {})
-        side = player.get("bookmakerOutcomeId")
         price = player.get("price")
-        if side in ("home", "draw", "away") and price:
+        if price:
             prices[side] = price
     if set(prices.keys()) != {"home", "draw", "away"}:
         return None
