@@ -1,3 +1,4 @@
 detected_at,tournament,fixture_id,start_time,side,soft_odds,pinnacle_fair_prob,ev,status,actual_result,profit
 2026-08-16T22:16:19.427911+00:00,Brasileiro Serie A,id1000032566886930,2026-08-17T23:00:00.000Z,away,6.25,0.1686,0.0536,pending,,
 2026-08-16T22:16:19.428232+00:00,Brasileiro Serie A,id1000032566886944,2026-08-23T19:00:00.000Z,away,6.25,0.1899,0.187,pending,,
+2026-08-17T09:36:49.757730+00:00,Brasileiro Serie A,id1000032566886940,2026-08-24T23:00:00.000Z,draw,3.3,0.319,0.0526,pending,,
