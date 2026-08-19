@@ -82,8 +82,10 @@ def main():
         if not data or not data.get("scores"):
             continue  # todavia sin resultado disponible
 
-        # periodo "0" = full time en la convencion de OddsPapi vista en /v4/odds-by-tournaments
-        ft = data["scores"].get("0")
+        # La respuesta real de /v4/scores usa claves con nombre ("fulltime",
+        # "result", "p1"...), NO numericas como "0"/"1" (eso era de otro
+        # endpoint). Verificado a mano: "fulltime" = marcador final.
+        ft = data["scores"].get("periods", {}).get("fulltime")
         if not ft:
             continue
 
