@@ -4,3 +4,4 @@ detected_at,tournament,fixture_id,start_time,side,soft_odds,pinnacle_fair_prob,e
 2026-08-17T09:36:49.757730+00:00,Brasileiro Serie A,id1000032566886940,2026-08-24T23:00:00.000Z,draw,3.3,0.319,0.0526,pending,,
 2026-08-21T09:32:31.301007+00:00,Eliteserien (Noruega),id1000002067015350,2026-08-29T16:00:00.000Z,away,11.0,0.1096,0.2052,pending,,
 2026-08-21T09:32:31.301266+00:00,Eliteserien (Noruega),id1000002067015346,2026-08-30T15:00:00.000Z,home,2.5,0.4277,0.0693,pending,,
+2026-08-23T09:23:17.322669+00:00,Eliteserien (Noruega),id1000002067015342,2026-08-30T17:15:00.000Z,draw,4.1,0.2561,0.0501,pending,,
