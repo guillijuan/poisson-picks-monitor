@@ -33,10 +33,18 @@ TOURNAMENTS = {
 }
 
 LOG_PATH = "value_bets_log.csv"
+PARTICIPANTS_PATH = "participants.json"
 LOG_FIELDS = [
-    "detected_at", "tournament", "fixture_id", "start_time", "side", "soft_odds",
-    "pinnacle_fair_prob", "ev", "status", "actual_result", "profit",
+    "detected_at", "tournament", "fixture_id", "start_time", "home_team", "away_team",
+    "side", "soft_odds", "pinnacle_fair_prob", "ev", "status", "actual_result", "profit",
 ]
+
+
+def load_participants():
+    if not os.path.exists(PARTICIPANTS_PATH):
+        return {}
+    with open(PARTICIPANTS_PATH, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 
 def fetch_odds(bookmaker, tournament_ids, retries=3):
@@ -149,6 +157,7 @@ def main():
         sys.exit(1)
 
     soft_by_id = {fx["fixtureId"]: fx for fx in soft_data}
+    participants = load_participants()
     print(f"Partidos con cuotas Pinnacle: {len(pinnacle_data)}")
 
     new_hits = []
@@ -165,6 +174,8 @@ def main():
 
         fair = devig(pin_prices)
         tournament_name = TOURNAMENTS.get(fx.get("tournamentId"), "?")
+        home_team = participants.get(str(fx.get("participant1Id")), f"id{fx.get('participant1Id')}")
+        away_team = participants.get(str(fx.get("participant2Id")), f"id{fx.get('participant2Id')}")
 
         for side in ("home", "draw", "away"):
             ev = fair[side] * soft_prices[side] - 1
@@ -174,6 +185,8 @@ def main():
                     "tournament": tournament_name,
                     "fixture_id": fx["fixtureId"],
                     "start_time": fx["startTime"],
+                    "home_team": home_team,
+                    "away_team": away_team,
                     "side": side,
                     "soft_odds": soft_prices[side],
                     "pinnacle_fair_prob": round(fair[side], 4),
@@ -184,14 +197,15 @@ def main():
                 }
                 log_value_bet(row)
                 new_hits.append(row)
-                print(f"  VALOR NUEVO | {tournament_name} | {side.upper()} @ {soft_prices[side]:.2f} | EV={ev:+.3f}")
+                print(f"  VALOR NUEVO | {tournament_name} | {home_team} vs {away_team} | "
+                      f"{side.upper()} @ {soft_prices[side]:.2f} | EV={ev:+.3f}")
 
     print(f"Nuevos value bets: {len(new_hits)}")
 
     if new_hits:
         lines = [
-            f"- **{h['tournament']}** | {h['side'].upper()} @ {h['soft_odds']} "
-            f"(EV {h['ev']:+.1%}, kickoff {h['start_time']})"
+            f"- **{h['tournament']}**: {h['home_team']} vs {h['away_team']} | "
+            f"{h['side'].upper()} @ {h['soft_odds']} (EV {h['ev']:+.1%}, kickoff {h['start_time']})"
             for h in new_hits
         ]
         body = "\n".join(lines) + f"\n\nDetectado: {datetime.now(timezone.utc).isoformat()}"
