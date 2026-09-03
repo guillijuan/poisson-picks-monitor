@@ -1,11 +1,13 @@
 name: Check value bets
 
 on:
-  schedule:
-    # 3 corridas/dia = 6 requests/dia = ~180/mes (cupo free OddsPapi: 250/mes)
-    - cron: "0 9 * * *"
-    - cron: "0 15 * * *"
-    - cron: "0 21 * * *"
+  # PAUSADO: cupo mensual de OddsPapi agotado (253/250) el 2026-09-03.
+  # Se renueva el 22 de cada mes (fecha de alta de la suscripcion). Reactivar
+  # el cron cerca del 2026-09-22 -- ver docs/decisions en el repo principal.
+  # schedule:
+  #   - cron: "0 9 * * *"
+  #   - cron: "0 15 * * *"
+  #   - cron: "0 21 * * *"
   workflow_dispatch:
     inputs:
       test_issue:

@@ -1,9 +1,11 @@
 name: Resolve results (paper trading)
 
 on:
-  schedule:
-    # 1 vez al dia, suficiente margen para que los partidos del dia anterior terminen
-    - cron: "0 8 * * *"
+  # PAUSADO junto con check.yml: cupo mensual de OddsPapi agotado el
+  # 2026-09-03, se renueva ~22 de cada mes. Los pendientes se resuelven
+  # solos apenas se reactive -- no se pierde nada, solo se demora.
+  # schedule:
+  #   - cron: "0 8 * * *"
   workflow_dispatch: {}
 
 permissions:
